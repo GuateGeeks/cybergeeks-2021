@@ -3,10 +3,10 @@ import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/th
 import { DRACOLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/DRACOLoader.js';
 import { RGBELoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/RGBELoader.js';
 import { GCodeLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/loaders/GCodeLoader.js';
-import { OrbitControls  } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/OrbitControls.js'; 
-import { RoughnessMipmapper } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/utils/RoughnessMipmapper.js'; 
+import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/OrbitControls.js';
+import { RoughnessMipmapper } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/utils/RoughnessMipmapper.js';
 import { DeviceOrientationControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/DeviceOrientationControls.js';
-import { FlyControls  } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/FlyControls.js'; 
+import { FlyControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/FlyControls.js';
 
 let audio, playButton, playIcon;
 let firtPlay = true;
@@ -22,9 +22,9 @@ window.mobileCheck = function () {
 //Play Audio
 window.addEventListener("DOMContentLoaded", cotentLoaded);
 
-function playMusic(event){
+function playMusic(event) {
     event.preventDefault();
-    if(is_playing){
+    if (is_playing) {
         audio.pause();
         playIcon.classList.add('lni-play');
         playIcon.classList.remove('lni-pause');
@@ -38,18 +38,18 @@ function playMusic(event){
 }
 
 
-function cotentLoaded(event){
-    playButton = document.getElementById( 'play-music' );
+function cotentLoaded(event) {
+    playButton = document.getElementById('play-music');
     playIcon = playButton.getElementsByTagName('i')[0];
     audio = document.querySelector("audio");
     audio.volume = 0.2;
     window.addEventListener("mousemove", event => {
-        if(firtPlay){
+        if (firtPlay) {
             playMusic(event);
             firtPlay = false;
         }
     }, false)
-    
+
     playButton.addEventListener('click', playMusic, false);
 }
 
@@ -71,8 +71,8 @@ let screenWidth, screenHeight;
 
 screenWidth = screenHeight = window.innerWidth
 
-if(window.mobileCheck()){
-    
+if (window.mobileCheck()) {
+
 } else {
 }
 
@@ -96,18 +96,18 @@ function createPathStrings(filename) {
         'nz',
     ];
     const pathStings = sides.map(side => {
-      return baseFilename + '_' + side + fileType;
+        return baseFilename + '_' + side + fileType;
     });
-  
+
     return pathStings;
-  }
-  
+}
+
 function createMaterialArray(filename) {
     const skyboxImagepaths = createPathStrings(filename);
     const materialArray = skyboxImagepaths.map(image => {
-      let texture = new THREE.TextureLoader().load(image);
-  
-      return new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+        let texture = new THREE.TextureLoader().load(image);
+
+        return new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
     });
     return materialArray;
 }
@@ -124,90 +124,90 @@ function init_city_banner() {
 
     scene_city_banner = new THREE.Scene();
     clock_city_banner = new THREE.Clock();
-    camera_city_banner = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 2000 );
-    camera_city_banner.position.set( 25, 5, 30 );
+    camera_city_banner = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera_city_banner.position.set(25, 5, 30);
     camera_city_banner.rotation.x = -0.5
     camera_city_banner.rotation.y = 0.90
     camera_city_banner.rotation.z = 0.4
-    
+
 
     new THREE.CubeTextureLoader()
-        .setPath( '/threejs/textures/MilkyWay/' )
-        .load( [ 'dark-s_px.jpg', 
-                 'dark-s_nx.jpg', 
-                 'dark-s_py.jpg',
-                 'dark-s_ny.jpg',
-                 'dark-s_pz.jpg',
-                 'dark-s_nz.jpg' ], function ( texture ) {
-               
-            material = new THREE.MeshBasicMaterial({
-                envMap: texture,
-                side: THREE.BackSide,
+        .setPath('threejs/textures/MilkyWay/')
+        .load(['dark-s_px.jpg',
+            'dark-s_nx.jpg',
+            'dark-s_py.jpg',
+            'dark-s_ny.jpg',
+            'dark-s_pz.jpg',
+            'dark-s_nz.jpg'], function (texture) {
+
+                material = new THREE.MeshBasicMaterial({
+                    envMap: texture,
+                    side: THREE.BackSide,
+                });
+
+                let sphere = new THREE.Mesh(new THREE.SphereGeometry(37, 32, 32), material);
+                scene_city_banner.add(sphere);
+
+                const loader = new GLTFLoader().setPath('threejs/models/city/');
+                loader.load('scene.gltf', function (gltf) {
+                    const model = gltf.scene;
+                    // model.scale.set( 10, 10, 10 );
+                    // model.position.set( 1, 1, 0 );
+
+                    model.traverse(function (child) {
+
+                        if (child.isMesh) {
+
+                            // TOFIX RoughnessMipmapper seems to be broken with WebGL 2.0
+                            // roughnessMipmapper.generateMipmaps( child.material );
+
+                        }
+
+                    });
+
+                    scene_city_banner.add(model);
+                    mixer_city_banner = new THREE.AnimationMixer(model);
+                    animation_city_banner = mixer_city_banner.clipAction(gltf.animations[0]);
+                    // mixer_city_banner.clipAction( gltf.animations[ 1 ] ).play();
+                    if (activate_animations_city_banner) {
+                        animation_city_banner.play();
+                    }
+                    animate_city_banner();
+
+                }, undefined, function (e) {
+
+                    console.error(e);
+
+                });
+
             });
 
-            let sphere = new THREE.Mesh( new THREE.SphereGeometry( 37, 32, 32 ), material );
-            scene_city_banner.add( sphere );
+    const light = new THREE.AmbientLight(0x404040); // soft white light
+    scene_city_banner.add(light);
 
-            const loader = new GLTFLoader().setPath( '/threejs/models/city/' );
-            loader.load( 'scene.gltf', function ( gltf ) {
-                const model = gltf.scene;
-                // model.scale.set( 10, 10, 10 );
-                // model.position.set( 1, 1, 0 );
-                
-                model.traverse( function ( child ) {
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 8);
+    scene_city_banner.add(directionalLight);
 
-                    if ( child.isMesh ) {
-
-                        // TOFIX RoughnessMipmapper seems to be broken with WebGL 2.0
-                        // roughnessMipmapper.generateMipmaps( child.material );
-
-                    }
-
-                } );
-
-                scene_city_banner.add( model );
-                mixer_city_banner = new THREE.AnimationMixer( model );
-                animation_city_banner = mixer_city_banner.clipAction( gltf.animations[ 0 ] );
-                // mixer_city_banner.clipAction( gltf.animations[ 1 ] ).play();
-                if(activate_animations_city_banner){
-                    animation_city_banner.play();
-                }
-                animate_city_banner();
-
-            }, undefined, function ( e ) {
-
-                console.error( e );
-
-            } );
-
-        } );
-
-    const light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    scene_city_banner.add( light );
-
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    directionalLight.position.set(1,1,8);
-    scene_city_banner.add( directionalLight );
-    
-    renderer_city_banner = new THREE.WebGLRenderer( { antialias: true } );
+    renderer_city_banner = new THREE.WebGLRenderer({ antialias: true });
     renderer_city_banner.autoClear = false;
-    renderer_city_banner.setPixelRatio( window.devicePixelRatio );
-    renderer_city_banner.setSize( window.innerWidth, window.innerHeight );
+    renderer_city_banner.setPixelRatio(window.devicePixelRatio);
+    renderer_city_banner.setSize(window.innerWidth, window.innerHeight);
     renderer_city_banner.shadowMap.enabled = true;
     renderer_city_banner.toneMapping = THREE.ACESFilmicToneMapping;
     renderer_city_banner.toneMappingExposure = 1;
     renderer_city_banner.outputEncoding = THREE.sRGBEncoding;
 
-    const pmremGenerator = new THREE.PMREMGenerator( renderer_city_banner );
+    const pmremGenerator = new THREE.PMREMGenerator(renderer_city_banner);
     pmremGenerator.compileEquirectangularShader();
-    
-    controls_city_banner = new OrbitControls( camera_city_banner, renderer_city_banner.domElement );
-    controls_city_banner.movementSpeed = 10;
-    controls_city_banner.minPolarAngle =  Math.PI * 0.01;
-    controls_city_banner.maxPolarAngle =  Math.PI * 0.45;
 
-    controls_city_banner.minDistance = 10 ;
-    controls_city_banner.maxDistance = 45 ;
+    controls_city_banner = new OrbitControls(camera_city_banner, renderer_city_banner.domElement);
+    controls_city_banner.movementSpeed = 10;
+    controls_city_banner.minPolarAngle = Math.PI * 0.01;
+    controls_city_banner.maxPolarAngle = Math.PI * 0.45;
+
+    controls_city_banner.minDistance = 10;
+    controls_city_banner.maxDistance = 45;
     controls_city_banner.domElement = renderer_city_banner.domElement;
     controls_city_banner.rollSpeed = Math.PI / 100;
     controls_city_banner.autoForward = false;
@@ -215,15 +215,15 @@ function init_city_banner() {
     controls_city_banner.panSpeed = 0.05
     controls_city_banner.screenSpacePanning = false;
     controls_city_banner.autoRotate = false;
-    container_city_banner = document.getElementById( '3d-model' );
-    container_city_banner.appendChild( renderer_city_banner.domElement );
+    container_city_banner = document.getElementById('3d-model');
+    container_city_banner.appendChild(renderer_city_banner.domElement);
 
     container_city_banner.addEventListener("mouseover", (event) => {
         activate_animations_city_banner = true
         animation_city_banner.play();
         animate_city_banner();
     });
-    
+
     container_city_banner.addEventListener("mouseout", (event) => {
         animation_city_banner.stop();
         activate_animations_city_banner = false
@@ -233,18 +233,18 @@ function init_city_banner() {
 
 
 function animate_city_banner() {
-    if(activate_animations_city_banner){
-        requestAnimationFrame( animate_city_banner );
+    if (activate_animations_city_banner) {
+        requestAnimationFrame(animate_city_banner);
         const delta = clock_city_banner.getDelta();
-        mixer_city_banner.update( delta );
+        mixer_city_banner.update(delta);
     }
     if (!window.mobileCheck()) {
         // camera_city_banner.position.x += (mouseX - camera_city_banner.position.x) * .00004;
         // camera_city_banner.position.y += (- mouseY - camera_city_banner.position.y) * .00004;
     }
     controls_city_banner.update();
-    count ++;
-    renderer_city_banner.render( scene_city_banner, camera_city_banner );
+    count++;
+    renderer_city_banner.render(scene_city_banner, camera_city_banner);
 }
 
 //Robot
@@ -258,91 +258,91 @@ function init_model_2() {
 
     scene_model_2 = new THREE.Scene();
     clock_model_2 = new THREE.Clock();
-    camera_model_2 = new THREE.PerspectiveCamera( 50, screenWidth / screenHeight, 0.1, 2000 );
-    camera_model_2.position.set( 3000, -200, 0 );
+    camera_model_2 = new THREE.PerspectiveCamera(50, screenWidth / screenHeight, 0.1, 2000);
+    camera_model_2.position.set(3000, -200, 0);
     // camera_model_2.rotation.x = -0.5
     camera_model_2.rotation.y = -0.55
     // camera_model_2.rotation.z = 0.4
 
     new THREE.CubeTextureLoader()
-        .setPath( '/threejs/textures/MilkyWay/' )
-        .load( [ 'dark-s_px.jpg', 
-                 'dark-s_nx.jpg', 
-                 'dark-s_py.jpg',
-                 'dark-s_ny.jpg',
-                 'dark-s_pz.jpg',
-                 'dark-s_nz.jpg' ], function ( texture ) {
+        .setPath('threejs/textures/MilkyWay/')
+        .load(['dark-s_px.jpg',
+            'dark-s_nx.jpg',
+            'dark-s_py.jpg',
+            'dark-s_ny.jpg',
+            'dark-s_pz.jpg',
+            'dark-s_nz.jpg'], function (texture) {
 
-            // const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
-            // scene_model_2.background = envMap;
-            // scene_model_2.environment = envMap  ;
+                // const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
+                // scene_model_2.background = envMap;
+                // scene_model_2.environment = envMap  ;
 
-            // texture.dispose();
-            // pmremGenerator.dispose();
-            
-            scene_model_2.background = texture;
+                // texture.dispose();
+                // pmremGenerator.dispose();
 
-            const loader = new GLTFLoader().setPath( '/threejs/models/2_legged_mech_animated/' );
-            loader.load( 'scene.gltf', function ( gltf ) {
-                const model = gltf.scene;
-                model.scale.set( 10, 10, 10 );
-                // model.position.set( 1, 1, 0 );
-                
-                model.traverse( function ( child ) {
-        
-                    if ( child.isMesh ) {
-        
-                        // TOFIX RoughnessMipmapper seems to be broken with WebGL 2.0
-                        // roughnessMipmapper.generateMipmaps( child.material );
-        
+                scene_model_2.background = texture;
+
+                const loader = new GLTFLoader().setPath('threejs/models/2_legged_mech_animated/');
+                loader.load('scene.gltf', function (gltf) {
+                    const model = gltf.scene;
+                    model.scale.set(10, 10, 10);
+                    // model.position.set( 1, 1, 0 );
+
+                    model.traverse(function (child) {
+
+                        if (child.isMesh) {
+
+                            // TOFIX RoughnessMipmapper seems to be broken with WebGL 2.0
+                            // roughnessMipmapper.generateMipmaps( child.material );
+
+                        }
+
+                    });
+
+                    scene_model_2.add(model);
+                    mixer_model_2 = new THREE.AnimationMixer(model);
+                    animation_model_2 = mixer_model_2.clipAction(gltf.animations[2]);
+                    if (activate_animations_model_2) {
+                        animation_model_2.play();
                     }
-        
-                } );
-        
-                scene_model_2.add( model );
-                mixer_model_2 = new THREE.AnimationMixer( model );
-                animation_model_2 = mixer_model_2.clipAction( gltf.animations[ 2 ] );
-                if(activate_animations_model_2){
-                    animation_model_2.play();
-                }
-                animate_model_2();
-        
-            }, undefined, function ( e ) {
-        
-                console.error( e );
-        
-            } );
+                    animate_model_2();
 
-        } );
+                }, undefined, function (e) {
 
-    const light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    scene_model_2.add( light );
+                    console.error(e);
 
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    directionalLight.position.set(1,1,8);
-    scene_model_2.add( directionalLight );
-    
-    renderer_model_2 = new THREE.WebGLRenderer( { antialias: true } );
+                });
+
+            });
+
+    const light = new THREE.AmbientLight(0x404040); // soft white light
+    scene_model_2.add(light);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 8);
+    scene_model_2.add(directionalLight);
+
+    renderer_model_2 = new THREE.WebGLRenderer({ antialias: true });
     renderer_model_2.autoClear = false;
-    renderer_model_2.setPixelRatio( window.devicePixelRatio );
-    renderer_model_2.setSize( screenWidth, screenHeight);
+    renderer_model_2.setPixelRatio(window.devicePixelRatio);
+    renderer_model_2.setSize(screenWidth, screenHeight);
     renderer_model_2.shadowMap.enabled = true;
     renderer_model_2.toneMapping = THREE.ACESFilmicToneMapping;
     renderer_model_2.toneMappingExposure = 1;
     renderer_model_2.outputEncoding = THREE.sRGBEncoding;
 
-    const pmremGenerator = new THREE.PMREMGenerator( renderer_model_2 );
+    const pmremGenerator = new THREE.PMREMGenerator(renderer_model_2);
     pmremGenerator.compileEquirectangularShader();
-    
-    controls_model_2 = new OrbitControls( camera_model_2, renderer_model_2.domElement );
+
+    controls_model_2 = new OrbitControls(camera_model_2, renderer_model_2.domElement);
     controls_model_2.movementSpeed = 10;
     // controls_model_2.minAzimuthAngle  =Math.PI * 0.05;
     // controls_model_2.maxAzimuthAngle = Math.PI * 0.33 ;
     // controls_model_2.minPolarAngle =  Math.PI * 0.337;
     // controls_model_2.maxPolarAngle =  Math.PI * 0.45;
 
-    controls_model_2.minDistance = 10 ;
-    controls_model_2.maxDistance = 100 ;
+    controls_model_2.minDistance = 10;
+    controls_model_2.maxDistance = 100;
     controls_model_2.domElement = renderer_model_2.domElement;
     controls_model_2.rollSpeed = Math.PI / 100;
     controls_model_2.autoForward = false;
@@ -351,15 +351,15 @@ function init_model_2() {
     controls_model_2.screenSpacePanning = false;
     controls_model_2.autoRotate = true;
     // controls_model_2.addEventListener( 'change', animate_model_2 )
-    container_model_2 = document.getElementById( 'robot-model' );
-    container_model_2.appendChild( renderer_model_2.domElement );
+    container_model_2 = document.getElementById('robot-model');
+    container_model_2.appendChild(renderer_model_2.domElement);
 
     container_model_2.addEventListener("mouseover", (event) => {
         activate_animations_model_2 = true
         animation_model_2.play();
         animate_model_2();
     });
-    
+
     container_model_2.addEventListener("mouseout", (event) => {
         animation_model_2.stop();
         activate_animations_model_2 = false
@@ -369,13 +369,13 @@ function init_model_2() {
 
 
 function animate_model_2() {
-    if(activate_animations_model_2){
-        requestAnimationFrame( animate_model_2 );
+    if (activate_animations_model_2) {
+        requestAnimationFrame(animate_model_2);
         const delta = clock_model_2.getDelta();
-        mixer_model_2.update( delta );
+        mixer_model_2.update(delta);
     }
     controls_model_2.update();
-    renderer_model_2.render( scene_model_2, camera_model_2 );
+    renderer_model_2.render(scene_model_2, camera_model_2);
 
 }
 
@@ -388,65 +388,65 @@ function init_model_3() {
 
     scene_model_3 = new THREE.Scene();
     clock_model_3 = new THREE.Clock();
-    camera_model_3 = new THREE.PerspectiveCamera( 50, screenWidth / screenHeight, 0.1, 2000 );
-    camera_model_3.position.set( 60, 60, 100 );
+    camera_model_3 = new THREE.PerspectiveCamera(50, screenWidth / screenHeight, 0.1, 2000);
+    camera_model_3.position.set(60, 60, 100);
     // camera_model_3.rotation.x = -0.5
     // camera_model_3.rotation.y = 0.90
     // camera_model_3.rotation.z = 0.4
 
     new THREE.CubeTextureLoader()
-        .setPath( '/threejs/textures/MilkyWay/' )
-        .load( [ 'dark-s_px.jpg', 
-                 'dark-s_nx.jpg', 
-                 'dark-s_py.jpg',
-                 'dark-s_ny.jpg',
-                 'dark-s_pz.jpg',
-                 'dark-s_nz.jpg' ], function ( texture ) {
+        .setPath('threejs/textures/MilkyWay/')
+        .load(['dark-s_px.jpg',
+            'dark-s_nx.jpg',
+            'dark-s_py.jpg',
+            'dark-s_ny.jpg',
+            'dark-s_pz.jpg',
+            'dark-s_nz.jpg'], function (texture) {
 
-            // const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
-            // scene_model_3.background = envMap;
-            // scene_model_3.environment = envMap  ;
+                // const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
+                // scene_model_3.background = envMap;
+                // scene_model_3.environment = envMap  ;
 
-            // texture.dispose();
-            // pmremGenerator.dispose();
-            scene_model_3.background = texture;
+                // texture.dispose();
+                // pmremGenerator.dispose();
+                scene_model_3.background = texture;
 
-            const loader = new GCodeLoader();
-            loader.load( '/threejs/models/gcode/benchy.gcode', function ( object ) {
-                model_3 = object;
-                object.position.set( - 100, - 20, 100 );
-                scene_model_3.add( object );
+                const loader = new GCodeLoader();
+                loader.load('threejs/models/gcode/benchy.gcode', function (object) {
+                    model_3 = object;
+                    object.position.set(- 100, - 20, 100);
+                    scene_model_3.add(object);
 
-                animate_model_3();
+                    animate_model_3();
 
-            } );
+                });
 
-        } );
+            });
 
-    const light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    scene_model_3.add( light );
-    
-    renderer_model_3 = new THREE.WebGLRenderer( { antialias: true } );
+    const light = new THREE.AmbientLight(0x404040); // soft white light
+    scene_model_3.add(light);
+
+    renderer_model_3 = new THREE.WebGLRenderer({ antialias: true });
     renderer_model_3.autoClear = false;
-    renderer_model_3.setPixelRatio( window.devicePixelRatio );
-    renderer_model_3.setSize( screenWidth, screenHeight);
+    renderer_model_3.setPixelRatio(window.devicePixelRatio);
+    renderer_model_3.setSize(screenWidth, screenHeight);
     renderer_model_3.shadowMap.enabled = true;
     renderer_model_3.toneMapping = THREE.ACESFilmicToneMapping;
     renderer_model_3.toneMappingExposure = 1;
     renderer_model_3.outputEncoding = THREE.sRGBEncoding;
 
-    const pmremGenerator = new THREE.PMREMGenerator( renderer_model_3 );
+    const pmremGenerator = new THREE.PMREMGenerator(renderer_model_3);
     pmremGenerator.compileEquirectangularShader();
-    
-    controls_model_3 = new OrbitControls( camera_model_3, renderer_model_3.domElement );
+
+    controls_model_3 = new OrbitControls(camera_model_3, renderer_model_3.domElement);
     controls_model_3.movementSpeed = 10;
     // controls_model_3.minAzimuthAngle  =Math.PI * 0.05;
     // controls_model_3.maxAzimuthAngle = Math.PI * 0.33 ;
     // controls_model_3.minPolarAngle =  Math.PI * 0.337;
     // controls_model_3.maxPolarAngle =  Math.PI * 0.45;
 
-    controls_model_3.minDistance = 15 ;
-    controls_model_3.maxDistance = 100 ;
+    controls_model_3.minDistance = 15;
+    controls_model_3.maxDistance = 100;
     controls_model_3.domElement = renderer_model_3.domElement;
     controls_model_3.rollSpeed = Math.PI / 100;
     controls_model_3.autoForward = false;
@@ -454,15 +454,15 @@ function init_model_3() {
     controls_model_3.panSpeed = 0.05
     controls_model_3.screenSpacePanning = false;
     controls_model_3.autoRotate = true;
-        
-    container_model_3 = document.getElementById( 'benchy-model' );
-    container_model_3.appendChild( renderer_model_3.domElement );
+
+    container_model_3 = document.getElementById('benchy-model');
+    container_model_3.appendChild(renderer_model_3.domElement);
 
     container_model_3.addEventListener("mouseover", (event) => {
         activate_animations_model_3 = true
         animate_model_3();
     });
-    
+
     container_model_3.addEventListener("mouseout", (event) => {
         activate_animations_model_3 = false
     });
@@ -471,13 +471,13 @@ function init_model_3() {
 
 
 function animate_model_3() {
-    if(activate_animations_model_3){
-        requestAnimationFrame( animate_model_3 );
+    if (activate_animations_model_3) {
+        requestAnimationFrame(animate_model_3);
     }
     const delta = clock_model_3.getDelta();
     // mixer_model_3.update( delta );
-    controls_model_3.update( delta );
-    renderer_model_3.render( scene_model_3, camera_model_3 );
+    controls_model_3.update(delta);
+    renderer_model_3.render(scene_model_3, camera_model_3);
 
 }
 
@@ -493,90 +493,90 @@ function init_model_4() {
 
     scene_model_4 = new THREE.Scene();
     clock_model_4 = new THREE.Clock();
-    camera_model_4 = new THREE.PerspectiveCamera( 50, screenWidth / screenHeight, 0.1, 2000 );
-    camera_model_4.position.set( 6, 5, 4 );
+    camera_model_4 = new THREE.PerspectiveCamera(50, screenWidth / screenHeight, 0.1, 2000);
+    camera_model_4.position.set(6, 5, 4);
     // camera_model_4.rotation.x = -0.5
     // camera_model_4.rotation.y = 0.90
     // camera_model_4.rotation.z = 0.4
 
     new THREE.CubeTextureLoader()
-        .setPath( '/threejs/textures/MilkyWay/' )
-        .load( [ 'dark-s_px.jpg', 
-                 'dark-s_nx.jpg', 
-                 'dark-s_py.jpg',
-                 'dark-s_ny.jpg',
-                 'dark-s_pz.jpg',
-                 'dark-s_nz.jpg' ], function ( texture ) {
+        .setPath('threejs/textures/MilkyWay/')
+        .load(['dark-s_px.jpg',
+            'dark-s_nx.jpg',
+            'dark-s_py.jpg',
+            'dark-s_ny.jpg',
+            'dark-s_pz.jpg',
+            'dark-s_nz.jpg'], function (texture) {
 
-            // const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
-            // scene_model_4.background = envMap;
-            // scene_model_4.environment = envMap  ;
+                // const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
+                // scene_model_4.background = envMap;
+                // scene_model_4.environment = envMap  ;
 
-            // texture.dispose();
-            // pmremGenerator.dispose();
-            scene_model_4.background = texture;
+                // texture.dispose();
+                // pmremGenerator.dispose();
+                scene_model_4.background = texture;
 
-            const loader = new GLTFLoader().setPath( '/threejs/models/breadboard/' );
-            loader.load( 'scene.gltf', function ( gltf ) {
-                model_4 = gltf.scene;
-                // model.position.set( 1, 1, 0 );
-                // model.scale.set( 0.01, 0.01, 0.01 );
-                model_4.scale.set( 50, 50, 50 );
-                
-                model_4.traverse( function ( child ) {
-        
-                    if ( child.isMesh ) {
-        
-                        // TOFIX RoughnessMipmapper seems to be broken with WebGL 2.0
-                        // roughnessMipmapper.generateMipmaps( child.material );
-        
-                    }
-        
-                } );
-        
-                scene_model_4.add( model_4 );
-                // if(activate_animations_model_4){
-                //     mixer_model_4 = new THREE.AnimationMixer( model_4 );
-                //     mixer_model_4.clipAction( gltf.animations[ 0 ] ).play();
-                // }
-                animate_model_4();
-        
-            }, undefined, function ( e ) {
-        
-                console.error( e );
-        
-            } );
+                const loader = new GLTFLoader().setPath('threejs/models/breadboard/');
+                loader.load('scene.gltf', function (gltf) {
+                    model_4 = gltf.scene;
+                    // model.position.set( 1, 1, 0 );
+                    // model.scale.set( 0.01, 0.01, 0.01 );
+                    model_4.scale.set(50, 50, 50);
 
-        } );
+                    model_4.traverse(function (child) {
 
-    const light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    scene_model_4.add( light );
+                        if (child.isMesh) {
 
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-    directionalLight.position.set(1,1,8);
-    scene_model_4.add( directionalLight );
-    
-    renderer_model_4 = new THREE.WebGLRenderer( { antialias: true } );
+                            // TOFIX RoughnessMipmapper seems to be broken with WebGL 2.0
+                            // roughnessMipmapper.generateMipmaps( child.material );
+
+                        }
+
+                    });
+
+                    scene_model_4.add(model_4);
+                    // if(activate_animations_model_4){
+                    //     mixer_model_4 = new THREE.AnimationMixer( model_4 );
+                    //     mixer_model_4.clipAction( gltf.animations[ 0 ] ).play();
+                    // }
+                    animate_model_4();
+
+                }, undefined, function (e) {
+
+                    console.error(e);
+
+                });
+
+            });
+
+    const light = new THREE.AmbientLight(0x404040); // soft white light
+    scene_model_4.add(light);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(1, 1, 8);
+    scene_model_4.add(directionalLight);
+
+    renderer_model_4 = new THREE.WebGLRenderer({ antialias: true });
     renderer_model_4.autoClear = false;
-    renderer_model_4.setPixelRatio( window.devicePixelRatio );
-    renderer_model_4.setSize( screenWidth, screenHeight);
+    renderer_model_4.setPixelRatio(window.devicePixelRatio);
+    renderer_model_4.setSize(screenWidth, screenHeight);
     renderer_model_4.shadowMap.enabled = true;
     renderer_model_4.toneMapping = THREE.ACESFilmicToneMapping;
     renderer_model_4.toneMappingExposure = 1;
     renderer_model_4.outputEncoding = THREE.sRGBEncoding;
-    
-    const pmremGenerator = new THREE.PMREMGenerator( renderer_model_4 );
+
+    const pmremGenerator = new THREE.PMREMGenerator(renderer_model_4);
     pmremGenerator.compileEquirectangularShader();
-    
-    controls_model_4 = new OrbitControls( camera_model_4, renderer_model_4.domElement );
+
+    controls_model_4 = new OrbitControls(camera_model_4, renderer_model_4.domElement);
     controls_model_4.movementSpeed = 10;
     // controls_model_4.minAzimuthAngle  =Math.PI * 0.05;
     // controls_model_4.maxAzimuthAngle = Math.PI * 0.33 ;
     // controls_model_4.minPolarAngle =  Math.PI * 0.337;
     // controls_model_4.maxPolarAngle =  Math.PI * 0.45;
 
-    controls_model_4.minDistance = 2     ;
-    controls_model_4.maxDistance = 10 ;
+    controls_model_4.minDistance = 2;
+    controls_model_4.maxDistance = 10;
     controls_model_4.domElement = renderer_model_4.domElement;
     controls_model_4.rollSpeed = Math.PI / 100;
     controls_model_4.autoForward = false;
@@ -585,14 +585,14 @@ function init_model_4() {
     controls_model_4.screenSpacePanning = false;
 
     // controls_model_4.addEventListener( 'change', animate_model_4 )
-        
+
     container_model_4 = document.getElementById(container_model_4);
-    container_model_4.appendChild( renderer_model_4.domElement );
+    container_model_4.appendChild(renderer_model_4.domElement);
     container_model_4.addEventListener("mouseover", (event) => {
         activate_animations_model_4 = true
         animate_model_4();
     });
-    
+
     container_model_4.addEventListener("mouseout", (event) => {
         activate_animations_model_4 = false
     });
@@ -601,15 +601,15 @@ function init_model_4() {
 
 
 function animate_model_4() {
-    if(activate_animations_model_4){
-        requestAnimationFrame( animate_model_4 );
+    if (activate_animations_model_4) {
+        requestAnimationFrame(animate_model_4);
         const delta = clock_model_4.getDelta();
         // mixer_model_4.update( delta );
         controls_model_4.update(delta);
         //model_4.rotation.x += 0.01;
         model_4.rotation.y += 0.01;
     }
-    renderer_model_4.render( scene_model_4, camera_model_4 );
+    renderer_model_4.render(scene_model_4, camera_model_4);
 
 }
 
@@ -628,62 +628,62 @@ function init_model_5() {
 
     scene_model_5 = new THREE.Scene();
     clock_model_5 = new THREE.Clock();
-    camera_model_5 = new THREE.PerspectiveCamera( 50, screenWidth / screenHeight, 0.1, 2000 );
-    camera_model_5.position.set( 600, 500, 400 );
+    camera_model_5 = new THREE.PerspectiveCamera(50, screenWidth / screenHeight, 0.1, 2000);
+    camera_model_5.position.set(600, 500, 400);
     // camera_model_5.position.set( 60, 60, 100 );
     // camera_model_5.rotation.x = -0.5
     // camera_model_5.rotation.y = 0.90
     // camera_model_5.rotation.z = 0.4
 
     new THREE.CubeTextureLoader()
-        .setPath( '/threejs/textures/MilkyWay/' )
-        .load( [ 'dark-s_px.jpg', 
-                 'dark-s_nx.jpg', 
-                 'dark-s_py.jpg',
-                 'dark-s_ny.jpg',
-                 'dark-s_pz.jpg',
-                 'dark-s_nz.jpg' ], function ( texture ) {
+        .setPath('threejs/textures/MilkyWay/')
+        .load(['dark-s_px.jpg',
+            'dark-s_nx.jpg',
+            'dark-s_py.jpg',
+            'dark-s_ny.jpg',
+            'dark-s_pz.jpg',
+            'dark-s_nz.jpg'], function (texture) {
 
-                    // const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
-                    // scene_model_5.background = envMap;
-                    // scene_model_5.environment = envMap  ;
+                // const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
+                // scene_model_5.background = envMap;
+                // scene_model_5.environment = envMap  ;
 
-                    // texture.dispose();
-                    // pmremGenerator.dispose();
-                    scene_model_5.background = texture
-                    var geometry = new THREE.BoxGeometry(400, 400, 400, 10, 10, 10);
-                    var material = new THREE.MeshBasicMaterial({color: 0X00d25b, wireframe: true, wireframeLinewidth: 0.9});
-                    model_5 = new THREE.Mesh(geometry, material);
-                    scene_model_5.add(model_5);
-                    animate_model_5()
+                // texture.dispose();
+                // pmremGenerator.dispose();
+                scene_model_5.background = texture
+                var geometry = new THREE.BoxGeometry(400, 400, 400, 10, 10, 10);
+                var material = new THREE.MeshBasicMaterial({ color: 0X00d25b, wireframe: true, wireframeLinewidth: 0.9 });
+                model_5 = new THREE.Mesh(geometry, material);
+                scene_model_5.add(model_5);
+                animate_model_5()
 
-        } );
+            });
 
-    const light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    scene_model_5.add( light );
-    
+    const light = new THREE.AmbientLight(0x404040); // soft white light
+    scene_model_5.add(light);
 
-    renderer_model_5 = new THREE.WebGLRenderer( { antialias: true } );
+
+    renderer_model_5 = new THREE.WebGLRenderer({ antialias: true });
     renderer_model_5.autoClear = false;
-    renderer_model_5.setPixelRatio( window.devicePixelRatio );
-    renderer_model_5.setSize( screenWidth, screenHeight);
+    renderer_model_5.setPixelRatio(window.devicePixelRatio);
+    renderer_model_5.setSize(screenWidth, screenHeight);
     renderer_model_5.shadowMap.enabled = true;
     renderer_model_5.toneMapping = THREE.ACESFilmicToneMapping;
     renderer_model_5.toneMappingExposure = 1;
     renderer_model_5.outputEncoding = THREE.sRGBEncoding;
 
-    const pmremGenerator = new THREE.PMREMGenerator( renderer_model_5 );
+    const pmremGenerator = new THREE.PMREMGenerator(renderer_model_5);
     pmremGenerator.compileEquirectangularShader();
-    
-    controls_model_5 = new OrbitControls( camera_model_5, renderer_model_5.domElement );
+
+    controls_model_5 = new OrbitControls(camera_model_5, renderer_model_5.domElement);
     controls_model_5.movementSpeed = 10;
     // controls_model_5.minAzimuthAngle  =Math.PI * 0.05;
     // controls_model_5.maxAzimuthAngle = Math.PI * 0.33 ;
     // controls_model_5.minPolarAngle =  Math.PI * 0.337;
     // controls_model_5.maxPolarAngle =  Math.PI * 0.45;
 
-    controls_model_5.minDistance = 400 ;
-    controls_model_5.maxDistance = 1500 ;
+    controls_model_5.minDistance = 400;
+    controls_model_5.maxDistance = 1500;
     controls_model_5.domElement = renderer_model_5.domElement;
     controls_model_5.rollSpeed = Math.PI / 100;
     controls_model_5.autoForward = false;
@@ -693,12 +693,12 @@ function init_model_5() {
     controls_model_5.autoRotate = true;
     // controls_model_5.addEventListener( 'change', animate_model_5 )
     container_model_5 = document.getElementById(container_model_5);
-    container_model_5.appendChild( renderer_model_5.domElement );
+    container_model_5.appendChild(renderer_model_5.domElement);
     container_model_5.addEventListener("mouseover", (event) => {
         activate_animations_model_5 = true
         animate_model_5();
     });
-    
+
     container_model_5.addEventListener("mouseout", (event) => {
         activate_animations_model_5 = false
     });
@@ -708,13 +708,13 @@ function init_model_5() {
 
 function animate_model_5() {
     const delta = clock_model_5.getDelta();
-    if(activate_animations_model_5){
-        requestAnimationFrame( animate_model_5 );
+    if (activate_animations_model_5) {
+        requestAnimationFrame(animate_model_5);
         model_5.rotation.x += 0.01;
         model_5.rotation.y += 0.01;
         // mixer_model_5.update( delta );
         // controls_model_5.update( delta );
     }
-    renderer_model_5.render( scene_model_5, camera_model_5 );
+    renderer_model_5.render(scene_model_5, camera_model_5);
 
 }
